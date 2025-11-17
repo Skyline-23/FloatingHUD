@@ -21,6 +21,8 @@ public struct FloatingHUDOverlay<CompactContent: View, ExpandedContent: View, Ic
     private let expandedContent: () -> ExpandedContent
     private let icon: () -> Icon
     private let constants: FloatingHUDConstants
+    // Keep a small offset from the vertical edges; mirrors horizontalMargin by default.
+    private var verticalMargin: CGFloat { constants.horizontalMargin }
     
     public init(
         containerSize: CGSize,
