@@ -46,5 +46,8 @@ public struct FloatingHUDConstants {
         self.dramaticCollapseSpring = dramaticCollapseSpring
     }
     
-    public static let `default` = FloatingHUDConstants()
+    // Return a fresh instance to avoid sharing mutable state across concurrency domains.
+    public static var `default`: FloatingHUDConstants {
+        FloatingHUDConstants()
+    }
 }
