@@ -106,7 +106,7 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View>:
             .conditionalMatchedGeometryEffect(id: "floatinghud-icon", in: namespace, isProxy: isProxy)
     }
     
-    private func compactContentView(isProxy: Bool = false, measureLabel: Bool = true) -> some View {
+    private func compactContentView(isProxy: Bool = false, measureLabel: Bool = true) -> AnyView {
         let view = compactContent()
             .conditionalMatchedGeometryEffect(id: "floatinghud-label", in: namespace, isProxy: isProxy)
         if measureLabel {
@@ -116,7 +116,7 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View>:
         }
     }
     
-    private func headerLabelView() -> some View {
+    private func headerLabelView() -> AnyView {
         if let expandedLabel {
             return AnyView(
                 expandedLabel()
