@@ -209,6 +209,32 @@ FloatingHUDOverlay(
 )
 ```
 
+- **Expanded label override**: match-animate a differently styled label in the expanded header.
+```swift
+FloatingHUDOverlay(
+    containerSize: proxy.size,
+    compact: {
+        Text("72%")
+            .font(.system(size: 18, weight: .semibold, design: .rounded))
+    },
+    expanded: {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("72.3% load")
+            Text("Current memory usage")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+    },
+    expandedLabel: {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("72.3% load").font(.system(size: 26, weight: .semibold, design: .rounded))
+            Text("Current memory usage").font(.footnote.weight(.semibold)).foregroundStyle(.secondary)
+        }
+    },
+    icon: { Image(systemName: "gauge") }
+)
+```
+
 ## Customization Tables
 
 **Layout**
@@ -218,7 +244,7 @@ FloatingHUDOverlay(
 | Compact padding         | 8h / 10v                | Pass custom `FloatingHUDConstants`          |
 | Icon size / padding     | 20pt / 1pt              | Pass custom `FloatingHUDConstants`          |
 | Snap margin             | 8pt                     | `FloatingHUDConstants.horizontalMargin`     |
-| Vertical margin         | 0pt                     | `FloatingHUDConstants.verticalMargin`       |
+| Vertical margin         | 10pt (default inset)    | `FloatingHUDConstants.verticalMargin`       |
 | Expanded height         | 260pt                   | `FloatingHUDConstants.expandedHeight`       |
 | Expanded max width      | 360pt                   | `FloatingHUDConstants.expandedWidthMax`     |
 | Card style              | Material + light stroke + soft shadow | Set `FloatingHUDConstants.cardStyle` |

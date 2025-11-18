@@ -20,6 +20,7 @@ public struct FloatingHUDOverlay<CompactContent: View, ExpandedContent: View, Ic
     private let compactContent: () -> CompactContent
     private let expandedContent: () -> ExpandedContent
     private let icon: () -> Icon
+    private let expandedLabel: (() -> AnyView)?
     private let constants: FloatingHUDConstants
     // Keep a configurable offset from the vertical edges; defaults mirror the sample (0pt).
     private var verticalMargin: CGFloat { constants.verticalMargin }
@@ -29,12 +30,14 @@ public struct FloatingHUDOverlay<CompactContent: View, ExpandedContent: View, Ic
         @ViewBuilder compact: @escaping () -> CompactContent,
         @ViewBuilder expanded: @escaping () -> ExpandedContent,
         @ViewBuilder icon: @escaping () -> Icon,
+        @ViewBuilder expandedLabel: (() -> some View)? = nil,
         constants: FloatingHUDConstants = .default
     ) {
         self.containerSize = containerSize
         self.compactContent = compact
         self.expandedContent = expanded
         self.icon = icon
+        self.expandedLabel = expandedLabel.map { builder in { AnyView(builder()) } }
         self.constants = constants
     }
     
@@ -59,6 +62,7 @@ public struct FloatingHUDOverlay<CompactContent: View, ExpandedContent: View, Ic
             compactContent: compactContent,
             expandedContent: expandedContent,
             icon: icon,
+            expandedLabel: expandedLabel,
             constants: constants
         )
         .contentShape(Rectangle())

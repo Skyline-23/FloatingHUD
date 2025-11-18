@@ -15,6 +15,7 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View>:
     let compactContent: () -> CompactContent
     let expandedContent: () -> ExpandedContent
     let icon: () -> Icon
+    let expandedLabel: (() -> AnyView)?
     let constants: FloatingHUDConstants
     
     var body: some View {
@@ -53,10 +54,10 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View>:
         }
     }
     
-    private func compactBody(isProxy: Bool) -> some View {
+    private func compactBody(isProxy: Bool, measureLabel: Bool = true) -> some View {
         HStack(alignment: .center, spacing: constants.compactSpacing + 2) {
             iconView(isProxy: isProxy)
-            compactContentView(isProxy: isProxy)
+            compactContentView(isProxy: isProxy, measureLabel: measureLabel)
         }
         .padding(.horizontal, constants.compactHorizontalPadding)
         .padding(.vertical, constants.compactVerticalPadding)
@@ -68,7 +69,7 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View>:
         VStack(alignment: .leading, spacing: 18) {
             HStack(alignment: .top, spacing: 14) {
                 iconView()
-                compactContentView()
+                headerLabelView()
                 Spacer(minLength: 0)
             }
             
@@ -93,14 +94,37 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View>:
         )
     }
     
+    private var labelSizeBinding: Binding<CGSize> {
+        Binding<CGSize>(
+            get: { compactState.observedLabel },
+            set: { updateLabelSize($0) }
+        )
+    }
+    
     private func iconView(isProxy: Bool = false) -> some View {
         icon()
             .conditionalMatchedGeometryEffect(id: "floatinghud-icon", in: namespace, isProxy: isProxy)
     }
     
-    private func compactContentView(isProxy: Bool = false) -> some View {
-        compactContent()
+    private func compactContentView(isProxy: Bool = false, measureLabel: Bool = true) -> some View {
+        let view = compactContent()
             .conditionalMatchedGeometryEffect(id: "floatinghud-label", in: namespace, isProxy: isProxy)
+        if measureLabel {
+            return AnyView(view.background(SizeReader(size: labelSizeBinding)))
+        } else {
+            return AnyView(view)
+        }
+    }
+    
+    private func headerLabelView() -> some View {
+        if let expandedLabel {
+            return AnyView(
+                expandedLabel()
+                    .conditionalMatchedGeometryEffect(id: "floatinghud-label", in: namespace, isProxy: false)
+            )
+        } else {
+            return compactContentView(isProxy: false, measureLabel: false)
+        }
     }
     
     private func updateLabelSize(_ newSize: CGSize) {
