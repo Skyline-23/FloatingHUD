@@ -126,10 +126,14 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View, 
     
     private func headerLabelView() -> AnyView {
         if usesCustomExpandedLabel {
+            let content = expandedLabel().minimumScaleFactor(labelMinimumScaleFactor)
+            let view = content
+                .conditionalMatchedGeometryEffect(id: "floatinghud-label", in: namespace, isProxy: false)
+            let immediateMeasure = ImmediateSizeReader(content: content, size: labelSizeBinding)
             return AnyView(
-                expandedLabel()
-                    .minimumScaleFactor(labelMinimumScaleFactor)
-                    .conditionalMatchedGeometryEffect(id: "floatinghud-label", in: namespace, isProxy: false)
+                view
+                    .background(SizeReader(size: labelSizeBinding))
+                    .background(immediateMeasure)
             )
         } else {
             return compactContentView(isProxy: false, measureLabel: false)
