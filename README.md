@@ -175,6 +175,40 @@ FloatingHUDOverlay(
 )
 ```
 
+- **Card style**: swap material for a solid blur, tint, or stroke.
+```swift
+let style = FloatingHUDCardStyle(
+    compact: .init(
+        background: { shape in
+            AnyView(
+                shape
+                    .fill(Color.orange.opacity(0.15))
+                    .overlay(shape.stroke(Color.orange.opacity(0.4), lineWidth: 1))
+            )
+        },
+        shadow: .init(color: Color.orange.opacity(0.35), radius: 12, y: 6)
+    ),
+    expanded: .init(
+        background: { shape in
+            AnyView(
+                shape
+                    .fill(.thinMaterial)
+                    .overlay(shape.stroke(Color.orange.opacity(0.5), lineWidth: 1.5))
+            )
+        },
+        shadow: .init(color: Color.orange.opacity(0.35), radius: 18, y: 10)
+    )
+)
+
+FloatingHUDOverlay(
+    containerSize: proxy.size,
+    compact: { Text("Custom card") },
+    expanded: { Text("Styled background + shadow") },
+    icon: { Image(systemName: "paintpalette.fill") },
+    constants: FloatingHUDConstants(cardStyle: style)
+)
+```
+
 ## Customization Tables
 
 **Layout**
@@ -184,8 +218,10 @@ FloatingHUDOverlay(
 | Compact padding         | 8h / 10v                | Pass custom `FloatingHUDConstants`          |
 | Icon size / padding     | 20pt / 1pt              | Pass custom `FloatingHUDConstants`          |
 | Snap margin             | 8pt                     | `FloatingHUDConstants.horizontalMargin`     |
+| Vertical margin         | 0pt                     | `FloatingHUDConstants.verticalMargin`       |
 | Expanded height         | 260pt                   | `FloatingHUDConstants.expandedHeight`       |
 | Expanded max width      | 360pt                   | `FloatingHUDConstants.expandedWidthMax`     |
+| Card style              | Material + light stroke + soft shadow | Set `FloatingHUDConstants.cardStyle` |
 
 **Animations**
 
@@ -210,7 +246,7 @@ FloatingHUDOverlay(
 
 ## Notes
 - Pure SwiftUI; no external dependencies.
-- Matched-geometry effects are used internally; consistent icon/text across states yields the smoothest transitions.
+- Icon + compact label are now matched-geometry animated into the expanded header; keep those elements consistent across states for the smoothest transitions.
 
 ## License
 MIT

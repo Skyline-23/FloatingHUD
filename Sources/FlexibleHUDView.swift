@@ -21,6 +21,7 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View>:
         let cornerRadius: CGFloat = isExpanded ? 28 : 18
         let shape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
         let stackAlignment: Alignment = isExpanded ? .topLeading : .topTrailing
+        let visuals = constants.cardStyle.visuals(for: isExpanded)
         
         ZStack(alignment: stackAlignment) {
             if isExpanded {
@@ -35,12 +36,14 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View>:
             height: isExpanded ? targetSize.height : nil,
             alignment: stackAlignment
         )
-        .background(
-            shape
-                .fill(.ultraThinMaterial)
-                .overlay(shape.stroke(Color.white.opacity(0.2), lineWidth: 1))
-        )
-        .shadow(color: Color.black.opacity(isExpanded ? 0.25 : 0.18), radius: isExpanded ? 22 : 14, x: 0, y: isExpanded ? 16 : 10)
+        .background {
+            let base = visuals.background(shape)
+            if let shadow = visuals.shadow {
+                base.shadow(color: shadow.color, radius: shadow.radius, x: shadow.x, y: shadow.y)
+            } else {
+                base
+            }
+        }
         .foregroundStyle(.primary)
         .onChange(of: compactState.observedContent) { newSize in
             updateContentSize(newSize)
@@ -52,8 +55,8 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View>:
     
     private func compactBody(isProxy: Bool) -> some View {
         HStack(alignment: .center, spacing: constants.compactSpacing + 2) {
-            icon()
-            compactContent()
+            iconView(isProxy: isProxy)
+            compactContentView(isProxy: isProxy)
         }
         .padding(.horizontal, constants.compactHorizontalPadding)
         .padding(.vertical, constants.compactVerticalPadding)
@@ -64,13 +67,23 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View>:
     private var expandedBody: some View {
         VStack(alignment: .leading, spacing: 18) {
             HStack(alignment: .top, spacing: 14) {
-                icon()
-                expandedContent()
+                iconView()
+                compactContentView()
                 Spacer(minLength: 0)
             }
+            
+            Divider().blendMode(.overlay)
+            
+            expandedContent()
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 18)
+        .overlay(alignment: .topTrailing) {
+            // Keep the compact body in the tree (but hidden) so size observations stay fresh while expanded.
+            compactBody(isProxy: true)
+                .opacity(0.001)
+                .allowsHitTesting(false)
+        }
     }
     
     private var contentSizeBinding: Binding<CGSize> {
@@ -78,6 +91,16 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View>:
             get: { compactState.observedContent },
             set: { updateContentSize($0) }
         )
+    }
+    
+    private func iconView(isProxy: Bool = false) -> some View {
+        icon()
+            .conditionalMatchedGeometryEffect(id: "floatinghud-icon", in: namespace, isProxy: isProxy)
+    }
+    
+    private func compactContentView(isProxy: Bool = false) -> some View {
+        compactContent()
+            .conditionalMatchedGeometryEffect(id: "floatinghud-label", in: namespace, isProxy: isProxy)
     }
     
     private func updateLabelSize(_ newSize: CGSize) {
