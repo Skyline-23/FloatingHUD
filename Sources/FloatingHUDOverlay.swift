@@ -24,20 +24,6 @@ public struct FloatingHUDOverlay<CompactContent: View, ExpandedContent: View, Ic
     // Keep a configurable offset from the vertical edges; defaults mirror the sample (10pt).
     private var verticalMargin: CGFloat { constants.verticalMargin }
     
-    private init(
-        containerSize: CGSize,
-        @ViewBuilder compact: @escaping () -> CompactContent,
-        @ViewBuilder expanded: @escaping () -> ExpandedContent,
-        @ViewBuilder icon: @escaping () -> Icon,
-        constants: FloatingHUDConstants
-    ) {
-        self.containerSize = containerSize
-        self.compactContent = compact
-        self.expandedContent = expanded
-        self.icon = icon
-        self.constants = constants
-    }
-    
     public init(
         containerSize: CGSize,
         @ViewBuilder compact: @escaping () -> CompactContent,
@@ -45,13 +31,11 @@ public struct FloatingHUDOverlay<CompactContent: View, ExpandedContent: View, Ic
         @ViewBuilder icon: @escaping () -> Icon,
         constants: FloatingHUDConstants = .default
     ) {
-        self.init(
-            containerSize: containerSize,
-            compact: compact,
-            expanded: expanded,
-            icon: icon,
-            constants: constants
-        )
+        self.containerSize = containerSize
+        self.compactContent = compact
+        self.expandedContent = expanded
+        self.icon = icon
+        self.constants = constants
     }
     
     public var body: some View {
