@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public struct FloatingHUDOverlay<CompactContent: View, ExpandedContent: View, Icon: View, ExpandedLabel: View = EmptyView>: View {
+public struct FloatingHUDOverlay<CompactContent: View, ExpandedContent: View, Icon: View, ExpandedLabel: View>: View {
     @State private var cardIsExpanded = false
     @State private var storedCenter: CGPoint? = nil
     @State private var dragOffset: CGSize = .zero
@@ -26,21 +26,59 @@ public struct FloatingHUDOverlay<CompactContent: View, ExpandedContent: View, Ic
     // Keep a configurable offset from the vertical edges; defaults mirror the sample (10pt).
     private var verticalMargin: CGFloat { constants.verticalMargin }
     
-    public init(
+    private init(
         containerSize: CGSize,
         @ViewBuilder compact: @escaping () -> CompactContent,
         @ViewBuilder expanded: @escaping () -> ExpandedContent,
         @ViewBuilder icon: @escaping () -> Icon,
-        @ViewBuilder expandedLabel: @escaping () -> ExpandedLabel = { EmptyView() },
-        constants: FloatingHUDConstants = .default
+        @ViewBuilder expandedLabel: @escaping () -> ExpandedLabel,
+        usesCustomExpandedLabel: Bool,
+        constants: FloatingHUDConstants
     ) {
         self.containerSize = containerSize
         self.compactContent = compact
         self.expandedContent = expanded
         self.icon = icon
         self.expandedLabel = expandedLabel
-        self.usesCustomExpandedLabel = !(ExpandedLabel.self == EmptyView.self)
+        self.usesCustomExpandedLabel = usesCustomExpandedLabel
         self.constants = constants
+    }
+    
+    public init(
+        containerSize: CGSize,
+        @ViewBuilder compact: @escaping () -> CompactContent,
+        @ViewBuilder expanded: @escaping () -> ExpandedContent,
+        @ViewBuilder icon: @escaping () -> Icon,
+        @ViewBuilder expandedLabel: @escaping () -> ExpandedLabel,
+        constants: FloatingHUDConstants = .default
+    ) {
+        self.init(
+            containerSize: containerSize,
+            compact: compact,
+            expanded: expanded,
+            icon: icon,
+            expandedLabel: expandedLabel,
+            usesCustomExpandedLabel: true,
+            constants: constants
+        )
+    }
+    
+    public init(
+        containerSize: CGSize,
+        @ViewBuilder compact: @escaping () -> CompactContent,
+        @ViewBuilder expanded: @escaping () -> ExpandedContent,
+        @ViewBuilder icon: @escaping () -> Icon,
+        constants: FloatingHUDConstants = .default
+    ) where ExpandedLabel == EmptyView {
+        self.init(
+            containerSize: containerSize,
+            compact: compact,
+            expanded: expanded,
+            icon: icon,
+            expandedLabel: { EmptyView() },
+            usesCustomExpandedLabel: false,
+            constants: constants
+        )
     }
     
     public var body: some View {
