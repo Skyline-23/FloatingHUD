@@ -175,7 +175,7 @@ FloatingHUDOverlay(
 )
 ```
 
-- **Card style**: swap material for a solid blur, tint, or stroke.
+- **Card style**: default is neutral material; swap to your own blur, tint, or stroke.
 ```swift
 let style = FloatingHUDCardStyle(
     compact: .init(
@@ -247,7 +247,7 @@ FloatingHUDOverlay(
 | Vertical margin         | 10pt (default inset)    | `FloatingHUDConstants.verticalMargin`       |
 | Expanded height         | 260pt                   | `FloatingHUDConstants.expandedHeight`       |
 | Expanded max width      | 360pt                   | `FloatingHUDConstants.expandedWidthMax`     |
-| Card style              | Material + light stroke + soft shadow | Set `FloatingHUDConstants.cardStyle` |
+| Card style              | Neutral material + stroke + shadow | Set `FloatingHUDConstants.cardStyle` |
 
 **Animations**
 

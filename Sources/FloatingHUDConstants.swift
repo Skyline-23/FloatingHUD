@@ -100,6 +100,8 @@ public struct FloatingHUDCardStyle {
     
     public static var material: FloatingHUDCardStyle {
         let strokeColor = Color.white.opacity(0.2)
+        let compactShadow = Shadow(color: Color.black.opacity(0.18), radius: 14, x: 0, y: 10)
+        let expandedShadow = Shadow(color: Color.black.opacity(0.25), radius: 22, x: 0, y: 16)
         let background: (RoundedRectangle) -> AnyView = { shape in
             AnyView(
                 shape
@@ -107,11 +109,10 @@ public struct FloatingHUDCardStyle {
                     .overlay(shape.stroke(strokeColor, lineWidth: 1))
             )
         }
-        let compactShadow = Shadow(color: Color.black.opacity(0.18), radius: 14, x: 0, y: 10)
-        let expandedShadow = Shadow(color: Color.black.opacity(0.25), radius: 22, x: 0, y: 16)
         return FloatingHUDCardStyle(
             compact: Visuals(background: background, shadow: compactShadow),
             expanded: Visuals(background: background, shadow: expandedShadow)
         )
     }
+    
 }

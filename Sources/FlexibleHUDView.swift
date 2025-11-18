@@ -18,6 +18,7 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View, 
     let expandedLabel: () -> ExpandedLabel
     let usesCustomExpandedLabel: Bool
     let constants: FloatingHUDConstants
+    private let labelMinimumScaleFactor: CGFloat = 0.1
     
     var body: some View {
         let cornerRadius: CGFloat = isExpanded ? 28 : 18
@@ -109,6 +110,7 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View, 
     
     private func compactContentView(isProxy: Bool = false, measureLabel: Bool = true) -> AnyView {
         let view = compactContent()
+            .minimumScaleFactor(labelMinimumScaleFactor)
             .conditionalMatchedGeometryEffect(id: "floatinghud-label", in: namespace, isProxy: isProxy)
         if measureLabel {
             return AnyView(view.background(SizeReader(size: labelSizeBinding)))
@@ -121,6 +123,7 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View, 
         if usesCustomExpandedLabel {
             return AnyView(
                 expandedLabel()
+                    .minimumScaleFactor(labelMinimumScaleFactor)
                     .conditionalMatchedGeometryEffect(id: "floatinghud-label", in: namespace, isProxy: false)
             )
         } else {
