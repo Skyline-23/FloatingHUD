@@ -57,7 +57,7 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View, 
     }
     
     private func compactBody(isProxy: Bool, measureLabel: Bool = true) -> some View {
-        HStack(alignment: .center, spacing: constants.compactSpacing + 2) {
+        HStack(alignment: .center, spacing: constants.compactSpacing) {
             iconView(isProxy: isProxy)
             compactContentView(isProxy: isProxy, measureLabel: measureLabel)
         }
@@ -109,11 +109,16 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View, 
     }
     
     private func compactContentView(isProxy: Bool = false, measureLabel: Bool = true) -> AnyView {
-        let view = compactContent()
-            .minimumScaleFactor(labelMinimumScaleFactor)
+        let content = compactContent().minimumScaleFactor(labelMinimumScaleFactor)
+        let view = content
             .conditionalMatchedGeometryEffect(id: "floatinghud-label", in: namespace, isProxy: isProxy)
         if measureLabel {
-            return AnyView(view.background(SizeReader(size: labelSizeBinding)))
+            let immediateMeasure = ImmediateSizeReader(content: content, size: labelSizeBinding)
+            return AnyView(
+                view
+                    .background(SizeReader(size: labelSizeBinding))
+                    .background(immediateMeasure)
+            )
         } else {
             return AnyView(view)
         }
