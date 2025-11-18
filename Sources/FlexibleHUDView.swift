@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View>: View {
+struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View, ExpandedLabel: View>: View {
     let isExpanded: Bool
     let targetSize: CGSize
     @Binding var compactState: CompactCardState
@@ -15,7 +15,8 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View>:
     let compactContent: () -> CompactContent
     let expandedContent: () -> ExpandedContent
     let icon: () -> Icon
-    let expandedLabel: (() -> AnyView)?
+    let expandedLabel: () -> ExpandedLabel
+    let usesCustomExpandedLabel: Bool
     let constants: FloatingHUDConstants
     
     var body: some View {
@@ -117,7 +118,7 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View>:
     }
     
     private func headerLabelView() -> AnyView {
-        if let expandedLabel {
+        if usesCustomExpandedLabel {
             return AnyView(
                 expandedLabel()
                     .conditionalMatchedGeometryEffect(id: "floatinghud-label", in: namespace, isProxy: false)

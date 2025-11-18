@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public struct FloatingHUDOverlay<CompactContent: View, ExpandedContent: View, Icon: View>: View {
+public struct FloatingHUDOverlay<CompactContent: View, ExpandedContent: View, Icon: View, ExpandedLabel: View = EmptyView>: View {
     @State private var cardIsExpanded = false
     @State private var storedCenter: CGPoint? = nil
     @State private var dragOffset: CGSize = .zero
@@ -20,9 +20,10 @@ public struct FloatingHUDOverlay<CompactContent: View, ExpandedContent: View, Ic
     private let compactContent: () -> CompactContent
     private let expandedContent: () -> ExpandedContent
     private let icon: () -> Icon
-    private let expandedLabel: (() -> AnyView)?
+    private let expandedLabel: () -> ExpandedLabel
+    private let usesCustomExpandedLabel: Bool
     private let constants: FloatingHUDConstants
-    // Keep a configurable offset from the vertical edges; defaults mirror the sample (0pt).
+    // Keep a configurable offset from the vertical edges; defaults mirror the sample (10pt).
     private var verticalMargin: CGFloat { constants.verticalMargin }
     
     public init(
@@ -30,14 +31,15 @@ public struct FloatingHUDOverlay<CompactContent: View, ExpandedContent: View, Ic
         @ViewBuilder compact: @escaping () -> CompactContent,
         @ViewBuilder expanded: @escaping () -> ExpandedContent,
         @ViewBuilder icon: @escaping () -> Icon,
-        @ViewBuilder expandedLabel: (() -> some View)? = nil,
+        @ViewBuilder expandedLabel: @escaping () -> ExpandedLabel = { EmptyView() },
         constants: FloatingHUDConstants = .default
     ) {
         self.containerSize = containerSize
         self.compactContent = compact
         self.expandedContent = expanded
         self.icon = icon
-        self.expandedLabel = expandedLabel.map { builder in { AnyView(builder()) } }
+        self.expandedLabel = expandedLabel
+        self.usesCustomExpandedLabel = !(ExpandedLabel.self == EmptyView.self)
         self.constants = constants
     }
     
@@ -63,6 +65,7 @@ public struct FloatingHUDOverlay<CompactContent: View, ExpandedContent: View, Ic
             expandedContent: expandedContent,
             icon: icon,
             expandedLabel: expandedLabel,
+            usesCustomExpandedLabel: usesCustomExpandedLabel,
             constants: constants
         )
         .contentShape(Rectangle())
