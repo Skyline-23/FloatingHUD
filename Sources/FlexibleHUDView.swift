@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View, ExpandedLabel: View>: View {
+struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View>: View {
     let isExpanded: Bool
     let targetSize: CGSize
     @Binding var compactState: CompactCardState
@@ -15,8 +15,6 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View, 
     let compactContent: () -> CompactContent
     let expandedContent: () -> ExpandedContent
     let icon: () -> Icon
-    let expandedLabel: () -> ExpandedLabel
-    let usesCustomExpandedLabel: Bool
     let constants: FloatingHUDConstants
     private let labelMinimumScaleFactor: CGFloat = 0.1
     
@@ -113,31 +111,14 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View, 
         let view = content
             .conditionalMatchedGeometryEffect(id: "floatinghud-label", in: namespace, isProxy: isProxy)
         if measureLabel {
-            let immediateMeasure = ImmediateSizeReader(content: content, size: labelSizeBinding)
-            return AnyView(
-                view
-                    .background(SizeReader(size: labelSizeBinding))
-                    .background(immediateMeasure)
-            )
+            return AnyView(view.background(SizeReader(size: labelSizeBinding)))
         } else {
             return AnyView(view)
         }
     }
     
     private func headerLabelView() -> AnyView {
-        if usesCustomExpandedLabel {
-            let content = expandedLabel().minimumScaleFactor(labelMinimumScaleFactor)
-            let view = content
-                .conditionalMatchedGeometryEffect(id: "floatinghud-label", in: namespace, isProxy: false)
-            let immediateMeasure = ImmediateSizeReader(content: content, size: labelSizeBinding)
-            return AnyView(
-                view
-                    .background(SizeReader(size: labelSizeBinding))
-                    .background(immediateMeasure)
-            )
-        } else {
-            return compactContentView(isProxy: false, measureLabel: false)
-        }
+        return compactContentView(isProxy: false, measureLabel: false)
     }
     
     private func updateLabelSize(_ newSize: CGSize) {
