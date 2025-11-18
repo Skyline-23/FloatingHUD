@@ -21,6 +21,7 @@ public struct FloatingHUDConstants {
     public var attachmentAnimation: Animation
     public var dramaticCollapseSpring: Animation
     public var cardStyle: FloatingHUDCardStyle
+    public var expandedLabelScale: CGFloat
     
     public init(
         compactIconSize: CGFloat = 20,
@@ -35,7 +36,8 @@ public struct FloatingHUDConstants {
         expansionAnimation: Animation = .interactiveSpring(response: 0.27, dampingFraction: 0.7, blendDuration: 0.02),
         attachmentAnimation: Animation = .interactiveSpring(response: 0.3, dampingFraction: 0.74, blendDuration: 0.04),
         dramaticCollapseSpring: Animation = .spring(response: 0.48, dampingFraction: 0.6, blendDuration: 0.05),
-        cardStyle: FloatingHUDCardStyle = .material
+        cardStyle: FloatingHUDCardStyle = .material,
+        expandedLabelScale: CGFloat = 1.25
     ) {
         self.compactIconSize = compactIconSize
         self.compactIconPadding = compactIconPadding
@@ -50,6 +52,7 @@ public struct FloatingHUDConstants {
         self.attachmentAnimation = attachmentAnimation
         self.dramaticCollapseSpring = dramaticCollapseSpring
         self.cardStyle = cardStyle
+        self.expandedLabelScale = expandedLabelScale
     }
     
     // Return a fresh instance to avoid sharing mutable state across concurrency domains.

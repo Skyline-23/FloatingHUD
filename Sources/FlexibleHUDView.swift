@@ -118,7 +118,9 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View>:
     }
     
     private func headerLabelView() -> AnyView {
-        return compactContentView(isProxy: false, measureLabel: false)
+        let view = compactContentView(isProxy: false, measureLabel: false)
+            .scaleEffect(isExpanded ? constants.expandedLabelScale : 1, anchor: .leading)
+        return AnyView(view)
     }
     
     private func updateLabelSize(_ newSize: CGSize) {
