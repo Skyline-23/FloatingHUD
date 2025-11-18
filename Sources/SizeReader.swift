@@ -59,8 +59,12 @@ struct ImmediateSizeReader<Content: View>: UIViewRepresentable {
     
     private func updateSizeIfNeeded(_ newSize: CGSize) {
         guard newSize != size else { return }
-        DispatchQueue.main.async {
-            self.size = newSize
+        if Thread.isMainThread {
+            size = newSize
+        } else {
+            DispatchQueue.main.async {
+                self.size = newSize
+            }
         }
     }
     
@@ -116,8 +120,12 @@ struct ImmediateSizeReader<Content: View>: NSViewRepresentable {
     
     private func updateSizeIfNeeded(_ newSize: CGSize) {
         guard newSize != size else { return }
-        DispatchQueue.main.async {
-            self.size = newSize
+        if Thread.isMainThread {
+            size = newSize
+        } else {
+            DispatchQueue.main.async {
+                self.size = newSize
+            }
         }
     }
     
