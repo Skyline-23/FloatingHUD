@@ -164,7 +164,8 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View>:
         var view = compactContentView(
             isProxy: isProxy,
             measureLabel: false,
-            applyScale: !shouldUseExpanded,
+            // Allow scaling in both states to avoid truncation with long text.
+            applyScale: true,
             forceExpandedStyle: shouldUseExpanded
         )
         return view
