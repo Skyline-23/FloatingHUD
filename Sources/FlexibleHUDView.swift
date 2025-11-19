@@ -11,6 +11,8 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View>:
     let isExpanded: Bool
     let targetSize: CGSize
     @Binding var compactState: CompactCardState
+    @Binding var expandedState: ExpandedCardState
+    let expandedTargetWidth: CGFloat
     let namespace: Namespace.ID
     let compactContent: () -> CompactContent
     let expandedContent: () -> ExpandedContent
@@ -50,6 +52,9 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View>:
         }
         .onChange(of: compactState.observedLabel) { _, newSize in
             updateLabelSize(newSize)
+        }
+        .background {
+            expandedMeasurementOverlay
         }
     }
     
@@ -105,6 +110,13 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View>:
         )
     }
     
+    private var expandedSizeBinding: Binding<CGSize> {
+        Binding<CGSize>(
+            get: { expandedState.observedSize },
+            set: { expandedState.updateSizeIfNeeded($0) }
+        )
+    }
+    
     private func iconView(isProxy: Bool = false) -> some View {
         icon()
             .conditionalMatchedGeometryEffect(id: "floatinghud-icon", in: namespace, isProxy: isProxy)
@@ -131,6 +143,14 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View>:
             view = AnyView(view.font(font))
         }
         return view
+    }
+    
+    private var expandedMeasurementOverlay: some View {
+        expandedBody(isProxy: true)
+            .frame(width: expandedTargetWidth)
+            .background(SizeReader(size: expandedSizeBinding))
+            .opacity(0.001)
+            .allowsHitTesting(false)
     }
     
     private func updateLabelSize(_ newSize: CGSize) {

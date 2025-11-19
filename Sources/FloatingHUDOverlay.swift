@@ -63,17 +63,14 @@ public struct FloatingHUDOverlay<CompactContent: View, ExpandedContent: View, Ic
             isExpanded: cardIsExpanded,
             targetSize: cardSize,
             compactState: $compactState,
+            expandedState: $expandedState,
+            expandedTargetWidth: resolvedCardSize(in: containerSize, expanded: true).width,
             namespace: hudNamespace,
             compactContent: compactContent,
             expandedContent: expandedContent,
             icon: icon,
             constants: constants
         )
-        .background {
-            if cardIsExpanded {
-                SizeReader(size: expandedSizeBinding)
-            }
-        }
         .contentShape(Rectangle())
         .onTapGesture {
             let nextExpanded = !cardIsExpanded
