@@ -23,6 +23,24 @@ public struct FloatingHUDConstants {
         public var verticalPadding: CGFloat
         /// Corner radius when compact.
         public var cornerRadius: CGFloat
+
+        public init(
+            iconSize: CGFloat,
+            iconPadding: CGFloat,
+            spacing: CGFloat,
+            labelFont: Font?,
+            horizontalPadding: CGFloat,
+            verticalPadding: CGFloat,
+            cornerRadius: CGFloat
+        ) {
+            self.iconSize = iconSize
+            self.iconPadding = iconPadding
+            self.spacing = spacing
+            self.labelFont = labelFont
+            self.horizontalPadding = horizontalPadding
+            self.verticalPadding = verticalPadding
+            self.cornerRadius = cornerRadius
+        }
         
         public static var `default`: CompactConfig {
             CompactConfig(
@@ -57,6 +75,30 @@ public struct FloatingHUDConstants {
         public var cornerRadius: CGFloat
         /// Maximum width the expanded card may grow to.
         public var widthMax: CGFloat
+
+        public init(
+            headerSpacing: CGFloat,
+            horizontalPadding: CGFloat,
+            verticalPadding: CGFloat,
+            bodySpacing: CGFloat,
+            dividerSpacing: CGFloat,
+            showsDivider: Bool,
+            dividerColor: Color?,
+            labelFont: Font?,
+            cornerRadius: CGFloat,
+            widthMax: CGFloat
+        ) {
+            self.headerSpacing = headerSpacing
+            self.horizontalPadding = horizontalPadding
+            self.verticalPadding = verticalPadding
+            self.bodySpacing = bodySpacing
+            self.dividerSpacing = dividerSpacing
+            self.showsDivider = showsDivider
+            self.dividerColor = dividerColor
+            self.labelFont = labelFont
+            self.cornerRadius = cornerRadius
+            self.widthMax = widthMax
+        }
         
         public static var `default`: ExpandedConfig {
             ExpandedConfig(
@@ -79,6 +121,11 @@ public struct FloatingHUDConstants {
         public var horizontalMargin: CGFloat
         /// Vertical margin used when snapping to edges.
         public var verticalMargin: CGFloat
+
+        public init(horizontalMargin: CGFloat, verticalMargin: CGFloat) {
+            self.horizontalMargin = horizontalMargin
+            self.verticalMargin = verticalMargin
+        }
         
         public static var `default`: Layout {
             Layout(horizontalMargin: 8, verticalMargin: 10)
@@ -92,6 +139,12 @@ public struct FloatingHUDConstants {
         public var attachment: Animation
         /// Spring used for dramatic collapse on tap.
         public var dramaticCollapse: Animation
+
+        public init(expansion: Animation, attachment: Animation, dramaticCollapse: Animation) {
+            self.expansion = expansion
+            self.attachment = attachment
+            self.dramaticCollapse = dramaticCollapse
+        }
         
         public static var `default`: Animations {
             Animations(
