@@ -79,11 +79,11 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View>:
         .background(SizeReader(size: contentSizeBinding))
     }
     
-    private func expandedBody(isProxy: Bool = false) -> some View {
+    private func expandedBody(isProxy: Bool = false, forceExpandedStyle: Bool = false) -> some View {
         VStack(alignment: .leading, spacing: constants.expanded.bodySpacing) {
             HStack(alignment: .top, spacing: constants.expanded.headerSpacing) {
                 iconView(isProxy: isProxy)
-                headerLabelView(isProxy: isProxy)
+                headerLabelView(isProxy: isProxy, forceExpandedStyle: forceExpandedStyle)
                 Spacer(minLength: 0)
             }
             
@@ -132,10 +132,14 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View>:
             .conditionalMatchedGeometryEffect(id: "floatinghud-icon", in: namespace, isProxy: isProxy)
     }
     
-    private func compactContentView(isProxy: Bool = false, measureLabel: Bool = true, applyScale: Bool = true) -> AnyView {
+    private func compactContentView(isProxy: Bool = false, measureLabel: Bool = true, applyScale: Bool = true, forceExpandedStyle: Bool = false) -> AnyView {
         var view: AnyView = AnyView(compactContent())
-        if let font = constants.compact.labelFont {
+        if let font = constants.compact.labelFont, !forceExpandedStyle {
             view = AnyView(view.font(font))
+        }
+        // Apply expanded font override when requested (used for pre-measurement and expanded state).
+        if forceExpandedStyle, let expandedFont = constants.expanded.labelFont {
+            view = AnyView(view.font(expandedFont))
         }
         if applyScale {
             view = AnyView(view.minimumScaleFactor(constants.labelMinimumScaleFactor))
@@ -149,20 +153,22 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View>:
         }
     }
     
-    private func headerLabelView(isProxy: Bool = false) -> AnyView {
-        var view = compactContentView(isProxy: isProxy, measureLabel: false, applyScale: !isExpanded)
-        if isExpanded, let font = constants.expanded.labelFont {
-            view = AnyView(
-                view
-                    .font(font)
-                    .minimumScaleFactor(1.0) // avoid downscaling in expanded state
-            )
+    private func headerLabelView(isProxy: Bool = false, forceExpandedStyle: Bool = false) -> AnyView {
+        let shouldUseExpanded = forceExpandedStyle || isExpanded
+        var view = compactContentView(
+            isProxy: isProxy,
+            measureLabel: false,
+            applyScale: !shouldUseExpanded,
+            forceExpandedStyle: shouldUseExpanded
+        )
+        if shouldUseExpanded {
+            view = AnyView(view.minimumScaleFactor(1.0))
         }
         return view
     }
     
     private var expandedMeasurementOverlay: some View {
-        expandedBody(isProxy: true)
+        expandedBody(isProxy: true, forceExpandedStyle: true)
             .frame(width: expandedTargetWidth)
             .background(SizeReader(size: expandedSizeBinding))
             .opacity(0.001)
