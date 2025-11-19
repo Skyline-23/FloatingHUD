@@ -162,7 +162,13 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View>:
             forceExpandedStyle: shouldUseExpanded
         )
         if shouldUseExpanded {
-            view = AnyView(view.minimumScaleFactor(1.0))
+            view = AnyView(
+                view
+                    .lineLimit(nil)
+                    .allowsTightening(false)
+                    .minimumScaleFactor(1.0)
+                    .fixedSize(horizontal: false, vertical: true)
+            )
         }
         return view
     }
