@@ -142,7 +142,13 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View>:
             view = AnyView(view.font(expandedFont))
         }
         if applyScale {
-            view = AnyView(view.minimumScaleFactor(constants.labelMinimumScaleFactor))
+            // Ensure scaling is allowed instead of truncating.
+            view = AnyView(
+                view
+                    .lineLimit(1)
+                    .minimumScaleFactor(constants.labelMinimumScaleFactor)
+                    .allowsTightening(true)
+            )
         }
         let matched: AnyView = AnyView(
             view.conditionalMatchedGeometryEffect(id: "floatinghud-label", in: namespace, isProxy: isProxy)
