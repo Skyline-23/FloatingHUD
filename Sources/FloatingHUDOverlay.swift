@@ -12,6 +12,7 @@ public struct FloatingHUDOverlay<CompactContent: View, ExpandedContent: View, Ic
     @State private var storedCenter: CGPoint? = nil
     @State private var dragOffset: CGSize = .zero
     @State private var compactState = CompactCardState()
+    @State private var expandedState = ExpandedCardState()
     @State private var hasBeenDragged = false
     @State private var currentAnchor: HorizontalAnchor = .right
     @Namespace private var hudNamespace
@@ -61,6 +62,11 @@ public struct FloatingHUDOverlay<CompactContent: View, ExpandedContent: View, Ic
             icon: icon,
             constants: constants
         )
+        .background {
+            if cardIsExpanded {
+                SizeReader(size: $expandedState.observedSize)
+            }
+        }
         .contentShape(Rectangle())
         .onTapGesture {
             let nextExpanded = !cardIsExpanded
@@ -107,6 +113,13 @@ public struct FloatingHUDOverlay<CompactContent: View, ExpandedContent: View, Ic
                 storedCenter = snapCenter(reference, cardSize: nextCard, in: newValue, anchorOverride: anchor)
             }
         }
+        .onChange(of: expandedState.observedSize) { newSize in
+            guard cardIsExpanded, newSize.height > 0 else { return }
+            let nextCard = resolvedCardSize(in: containerSize, expanded: true)
+            withAnimation(constants.attachmentAnimation) {
+                storedCenter = snapCenter(storedCenter ?? defaultCenter(for: nextCard, in: containerSize), cardSize: nextCard, in: containerSize, anchorOverride: currentAnchor)
+            }
+        }
         .onChange(of: cardIsExpanded) { newValue in
             let nextCard = resolvedCardSize(in: containerSize, expanded: newValue)
             withAnimation(constants.expansionAnimation) {
@@ -143,7 +156,8 @@ public struct FloatingHUDOverlay<CompactContent: View, ExpandedContent: View, Ic
             let compactWidth = resolvedCompactWidth(in: container)
             let availableWidth = max(container.width - (constants.horizontalMargin * 2), compactWidth)
             let width = min(availableWidth, constants.expandedWidthMax)
-            return CGSize(width: width, height: constants.expandedHeight)
+            let height = expandedState.observedSize.height > 0 ? expandedState.observedSize.height : constants.expandedHeight
+            return CGSize(width: width, height: height)
         } else {
             return compactState.compactSize
         }
@@ -187,7 +201,7 @@ public struct FloatingHUDOverlay<CompactContent: View, ExpandedContent: View, Ic
         let defaultPoint = defaultCenter(for: cardSize, in: containerSize)
         return abs(storedCenter.x - defaultPoint.x) < 1.0 && abs(storedCenter.y - defaultPoint.y) < 1.0
     }
-    
+
     private func resolvedCompactWidth(in container: CGSize) -> CGFloat {
         clampCompactWidth(compactState.measuredWidth, in: container)
     }
