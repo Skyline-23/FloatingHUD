@@ -129,7 +129,6 @@ FloatingHUDOverlay(
   - `layout`: `horizontalMargin`, `verticalMargin`
   - `animations`: `expansion`, `attachment`, `dramaticCollapse`
   - `cardStyle`: backgrounds/shadows for compact/expanded
-  - `labelMinimumScaleFactor`: min scale before truncation (applies to labels)
 - **Customization sample**: larger expanded header, custom fonts, tighter margins.
 ```swift
 let constants = FloatingHUDConstants(
@@ -152,8 +151,7 @@ let constants = FloatingHUDConstants(
         attachment: .interactiveSpring(response: 0.28, dampingFraction: 0.8),
         dramaticCollapse: .spring(response: 0.5, dampingFraction: 0.65)
     ),
-    cardStyle: .material,
-    labelMinimumScaleFactor: 0.1
+    cardStyle: .material
 )
 ```
 

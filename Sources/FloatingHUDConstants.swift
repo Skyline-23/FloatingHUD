@@ -165,8 +165,6 @@ public struct FloatingHUDConstants {
     public var animations: Animations
     /// Card background and shadow styling for compact/expanded.
     public var cardStyle: FloatingHUDCardStyle
-    /// Minimum scale factor for labels before truncation.
-    public var labelMinimumScaleFactor: CGFloat
     
     /// Initialize all layout/animation knobs for the HUD.
     /// - Parameters:
@@ -175,21 +173,18 @@ public struct FloatingHUDConstants {
     ///   - layout: Margins for snapping/clamping in the container.
     ///   - animations: Springs used for expand/collapse/attach.
     ///   - cardStyle: Background/stroke/shadow configuration.
-    ///   - labelMinimumScaleFactor: Minimum scale factor before labels truncate.
     public init(
         compact: CompactConfig = .default,
         expanded: ExpandedConfig = .default,
         layout: Layout = .default,
         animations: Animations = .default,
-        cardStyle: FloatingHUDCardStyle = .material,
-        labelMinimumScaleFactor: CGFloat = 0.1
+        cardStyle: FloatingHUDCardStyle = .material
     ) {
         self.compact = compact
         self.expanded = expanded
         self.layout = layout
         self.animations = animations
         self.cardStyle = cardStyle
-        self.labelMinimumScaleFactor = labelMinimumScaleFactor
     }
     
     // Return a fresh instance to avoid sharing mutable state across concurrency domains.
