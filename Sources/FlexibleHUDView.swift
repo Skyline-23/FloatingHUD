@@ -142,11 +142,15 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View>:
         }
         if applyScale {
             // Ensure scaling is allowed instead of truncating.
+            let baseLabelHeight = max(compactState.observedLabel.height, compactState.metrics.labelSize.height)
             view = AnyView(
                 view
                     .lineLimit(1)
                     .minimumScaleFactor(constants.labelMinimumScaleFactor)
                     .allowsTightening(true)
+                    .fixedSize(horizontal: true, vertical: false) // Measure intrinsic size; allow parent to scale it down.
+                    .layoutPriority(1) // Prefer shrinking text over other elements.
+                    .frame(minHeight: baseLabelHeight, alignment: .center) // Hold height to avoid vertical drift while scaling.
             )
         }
         let matched: AnyView = AnyView(
@@ -164,8 +168,8 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View>:
         var view = compactContentView(
             isProxy: isProxy,
             measureLabel: false,
-            // Allow scaling in both states to avoid truncation with long text.
-            applyScale: true,
+            // Scale only in compact; let expanded grow naturally.
+            applyScale: !shouldUseExpanded,
             forceExpandedStyle: shouldUseExpanded
         )
         return view
