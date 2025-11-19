@@ -75,7 +75,6 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View>:
         }
         .padding(.horizontal, constants.compact.horizontalPadding)
         .padding(.vertical, constants.compact.verticalPadding)
-        .fixedSize()
         .background(SizeReader(size: contentSizeBinding))
     }
     
