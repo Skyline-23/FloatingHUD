@@ -47,6 +47,16 @@ public struct FloatingHUDOverlay<CompactContent: View, ExpandedContent: View, Ic
     }
     
     public var body: some View {
+        Group {
+            if containerSize.width > 0, containerSize.height > 0 {
+                overlayContent
+            } else {
+                Color.clear
+            }
+        }
+    }
+    
+    private var overlayContent: some View {
         let compactSize = compactState.compactSize
         let baseResolvedSize = cardIsExpanded
             ? resolvedCardSize(in: containerSize, expanded: true)
@@ -59,7 +69,7 @@ public struct FloatingHUDOverlay<CompactContent: View, ExpandedContent: View, Ic
             y: clampedCenter.y + dragOffset.height
         )
         
-        FlexibleHUDView(
+        return FlexibleHUDView(
             isExpanded: cardIsExpanded,
             targetSize: cardSize,
             compactState: $compactState,

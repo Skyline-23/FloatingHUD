@@ -20,6 +20,16 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View>:
     let constants: FloatingHUDConstants
     
     var body: some View {
+        Group {
+            if targetSize.width > 0, targetSize.height > 0 {
+                content
+            } else {
+                Color.clear
+            }
+        }
+    }
+    
+    private var content: some View {
         let cornerRadius: CGFloat = isExpanded ? constants.expanded.cornerRadius : constants.compact.cornerRadius
         let shape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
         let stackAlignment: Alignment = isExpanded ? .topLeading : .topTrailing
@@ -122,12 +132,14 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View>:
             .conditionalMatchedGeometryEffect(id: "floatinghud-icon", in: namespace, isProxy: isProxy)
     }
     
-    private func compactContentView(isProxy: Bool = false, measureLabel: Bool = true) -> AnyView {
+    private func compactContentView(isProxy: Bool = false, measureLabel: Bool = true, applyScale: Bool = true) -> AnyView {
         var view: AnyView = AnyView(compactContent())
         if let font = constants.compact.labelFont {
             view = AnyView(view.font(font))
         }
-        view = AnyView(view.minimumScaleFactor(constants.labelMinimumScaleFactor))
+        if applyScale {
+            view = AnyView(view.minimumScaleFactor(constants.labelMinimumScaleFactor))
+        }
         let matched = view
             .conditionalMatchedGeometryEffect(id: "floatinghud-label", in: namespace, isProxy: isProxy)
         if measureLabel {
@@ -138,9 +150,13 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View>:
     }
     
     private func headerLabelView(isProxy: Bool = false) -> AnyView {
-        var view = compactContentView(isProxy: isProxy, measureLabel: false)
+        var view = compactContentView(isProxy: isProxy, measureLabel: false, applyScale: !isExpanded)
         if isExpanded, let font = constants.expanded.labelFont {
-            view = AnyView(view.font(font))
+            view = AnyView(
+                view
+                    .font(font)
+                    .minimumScaleFactor(1.0) // avoid downscaling in expanded state
+            )
         }
         return view
     }
