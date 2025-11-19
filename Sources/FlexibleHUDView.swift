@@ -35,7 +35,7 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View>:
         let stackAlignment: Alignment = isExpanded ? .topLeading : .topTrailing
         let visuals = constants.cardStyle.visuals(for: isExpanded)
         
-        ZStack(alignment: stackAlignment) {
+        return ZStack(alignment: stackAlignment) {
             if isExpanded {
                 expandedBody()
             } else {
