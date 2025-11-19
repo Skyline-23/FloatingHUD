@@ -276,23 +276,26 @@ FloatingHUDOverlay(
 
 **Layout**
 
-| Setting                 | Default                 | How to change                               |
-|-------------------------|-------------------------|---------------------------------------------|
-| Compact padding         | 8h / 10v                | Pass custom `FloatingHUDConstants`          |
-| Icon size / padding     | 20pt / 1pt              | Pass custom `FloatingHUDConstants`          |
-| Snap margin             | 8pt                     | `FloatingHUDConstants.layout.horizontalMargin` |
-| Vertical margin         | 10pt (default inset)    | `FloatingHUDConstants.layout.verticalMargin`   |
-| Expanded height         | Fits content (measured) | — (automatic)                               |
-| Expanded max width      | 360pt                   | `FloatingHUDConstants.expanded.widthMax`    |
-| Card style              | Neutral material + stroke + shadow | Set `FloatingHUDConstants.cardStyle` |
+| Setting                 | Default                 | How to change                                        |
+|-------------------------|-------------------------|------------------------------------------------------|
+| Compact padding         | 8h / 10v                | `constants.compact.horizontalPadding/verticalPadding`|
+| Icon size / padding     | 20pt / 1pt              | `constants.compact.iconSize/iconPadding`             |
+| Compact label font      | inherits caller         | `constants.compact.labelFont`                        |
+| Snap margin             | 8pt                     | `constants.layout.horizontalMargin`                  |
+| Vertical margin         | 10pt (default inset)    | `constants.layout.verticalMargin`                    |
+| Expanded height         | Fits content (measured) | — (automatic)                                        |
+| Expanded max width      | 360pt                   | `constants.expanded.widthMax`                        |
+| Expanded padding        | 20h / 18v               | `constants.expanded.horizontalPadding/verticalPadding`|
+| Expanded icon/label gap | 14pt                    | `constants.expanded.headerSpacing`                   |
+| Card style              | Neutral material + stroke + shadow | `constants.cardStyle`                              |
 
 **Animations**
 
-| Setting                 | Default spring                                 | How to change                                     |
-|-------------------------|-------------------------------------------------|---------------------------------------------------|
-| Expand / collapse       | interactiveSpring(response: 0.27, damping: 0.7) | Set `expansionAnimation` in `FloatingHUDConstants` |
-| Drag snap               | interactiveSpring(response: 0.3, damping: 0.74)| Set `attachmentAnimation` in `FloatingHUDConstants`|
-| Dramatic collapse       | spring(response: 0.48, damping: 0.6)            | Set `dramaticCollapseSpring` in `FloatingHUDConstants` |
+| Setting                 | Default spring                                 | How to change                               |
+|-------------------------|-------------------------------------------------|---------------------------------------------|
+| Expand / collapse       | interactiveSpring(response: 0.27, damping: 0.7) | `constants.animations.expansion`            |
+| Drag snap               | interactiveSpring(response: 0.3, damping: 0.74)| `constants.animations.attachment`           |
+| Dramatic collapse       | spring(response: 0.48, damping: 0.6)            | `constants.animations.dramaticCollapse`     |
 
 **Interaction**
 
