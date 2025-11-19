@@ -114,9 +114,43 @@ FloatingHUDOverlay(
 ```
 
 ## Behavior & Contract (with targeted snippets)
+- **Constants (grouped)**: tweak via `FloatingHUDConstants` (defaults shown).  
+  - `compact`: `iconSize`, `iconPadding`, `spacing`, `labelFont?`, `horizontalPadding`, `verticalPadding`, `cornerRadius`
+  - `expanded`: `headerSpacing`, `horizontalPadding`, `verticalPadding`, `bodySpacing`, `dividerSpacing`, `showsDivider`, `dividerColor?`, `labelFont?`, `cornerRadius`, `widthMax`
+  - `layout`: `horizontalMargin`, `verticalMargin`
+  - `animations`: `expansion`, `attachment`, `dramaticCollapse`
+  - `cardStyle`: backgrounds/shadows for compact/expanded
+  - `labelMinimumScaleFactor`: min scale before truncation (applies to labels)
+- **Customization sample**: larger expanded header, custom fonts, tighter margins.
+```swift
+let constants = FloatingHUDConstants(
+    compact: .init(iconSize: 22, spacing: 6, labelFont: .system(size: 17, weight: .semibold), horizontalPadding: 10, verticalPadding: 12, cornerRadius: 16),
+    expanded: .init(
+        headerSpacing: 16,
+        horizontalPadding: 22,
+        verticalPadding: 20,
+        bodySpacing: 20,
+        dividerSpacing: 6,
+        showsDivider: true,
+        dividerColor: .secondary.opacity(0.3),
+        labelFont: .system(size: 26, weight: .bold),
+        cornerRadius: 28,
+        widthMax: 420
+    ),
+    layout: .init(horizontalMargin: 6, verticalMargin: 8),
+    animations: .init(
+        expansion: .interactiveSpring(response: 0.3, dampingFraction: 0.75),
+        attachment: .interactiveSpring(response: 0.28, dampingFraction: 0.8),
+        dramaticCollapse: .spring(response: 0.5, dampingFraction: 0.65)
+    ),
+    cardStyle: .material,
+    labelMinimumScaleFactor: 0.1
+)
+```
+
 - **Snapping**: pass a custom margin for tighter snap.
 ```swift
-let snapConstants = FloatingHUDConstants(horizontalMargin: 2)
+let snapConstants = FloatingHUDConstants(layout: .init(horizontalMargin: 2))
 FloatingHUDOverlay(
     containerSize: proxy.size,
     compact: { Text("Snap me") },
@@ -128,7 +162,7 @@ FloatingHUDOverlay(
 
 - **Sizing**: increase expanded max width/height.
 ```swift
-let sizingConstants = FloatingHUDConstants(expandedWidthMax: 480, expandedHeight: 300)
+let sizingConstants = FloatingHUDConstants(expanded: .init(widthMax: 480))
 FloatingHUDOverlay(
     containerSize: proxy.size,
     compact: { Text("Compact fits content") },
@@ -141,8 +175,11 @@ FloatingHUDOverlay(
 - **Animations**: soften the springs.
 ```swift
 let animationConstants = FloatingHUDConstants(
-    expansionAnimation: .interactiveSpring(response: 0.35, dampingFraction: 0.8),
-    attachmentAnimation: .interactiveSpring(response: 0.25, dampingFraction: 0.7)
+    animations: .init(
+        expansion: .interactiveSpring(response: 0.35, dampingFraction: 0.8),
+        attachment: .interactiveSpring(response: 0.25, dampingFraction: 0.7),
+        dramaticCollapse: .spring(response: 0.5, dampingFraction: 0.7)
+    )
 )
 FloatingHUDOverlay(
     containerSize: proxy.size,
@@ -243,10 +280,10 @@ FloatingHUDOverlay(
 |-------------------------|-------------------------|---------------------------------------------|
 | Compact padding         | 8h / 10v                | Pass custom `FloatingHUDConstants`          |
 | Icon size / padding     | 20pt / 1pt              | Pass custom `FloatingHUDConstants`          |
-| Snap margin             | 8pt                     | `FloatingHUDConstants.horizontalMargin`     |
-| Vertical margin         | 10pt (default inset)    | `FloatingHUDConstants.verticalMargin`       |
-| Expanded height         | 260pt                   | `FloatingHUDConstants.expandedHeight`       |
-| Expanded max width      | 360pt                   | `FloatingHUDConstants.expandedWidthMax`     |
+| Snap margin             | 8pt                     | `FloatingHUDConstants.layout.horizontalMargin` |
+| Vertical margin         | 10pt (default inset)    | `FloatingHUDConstants.layout.verticalMargin`   |
+| Expanded height         | Fits content (measured) | — (automatic)                               |
+| Expanded max width      | 360pt                   | `FloatingHUDConstants.expanded.widthMax`    |
 | Card style              | Neutral material + stroke + shadow | Set `FloatingHUDConstants.cardStyle` |
 
 **Animations**

@@ -49,7 +49,7 @@ struct HUDCompactMetrics: Equatable {
     var contentSize: CGSize = .zero
     
     var minimumWidth: CGFloat {
-        iconBlockWidth + (FloatingHUDConstants.default.compactHorizontalPadding * 2)
+        iconBlockWidth + (FloatingHUDConstants.default.compact.horizontalPadding * 2)
     }
     
     var intrinsicWidth: CGFloat {
@@ -85,23 +85,23 @@ struct HUDCompactMetrics: Equatable {
     private var fallbackWidthFromLabel: CGFloat {
         guard labelSize.width > 0 else { return minimumWidth }
         return iconBlockWidth
-            + FloatingHUDConstants.default.compactSpacing
+            + FloatingHUDConstants.default.compact.spacing
             + labelSize.width
-            + (FloatingHUDConstants.default.compactHorizontalPadding * 2)
+            + (FloatingHUDConstants.default.compact.horizontalPadding * 2)
     }
     
     private var fallbackHeightFromLabel: CGFloat {
         let measuredHeight = labelSize.height > 0 ? labelSize.height : iconBlockHeight
         let contentHeight = max(iconBlockHeight, measuredHeight)
-        return contentHeight + (FloatingHUDConstants.default.compactVerticalPadding * 2)
+        return contentHeight + (FloatingHUDConstants.default.compact.verticalPadding * 2)
     }
     
     private var iconBlockWidth: CGFloat {
-        FloatingHUDConstants.default.compactIconSize + (FloatingHUDConstants.default.compactIconPadding * 2)
+        FloatingHUDConstants.default.compact.iconSize + (FloatingHUDConstants.default.compact.iconPadding * 2)
     }
     
     private var iconBlockHeight: CGFloat {
-        FloatingHUDConstants.default.compactIconSize + (FloatingHUDConstants.default.compactIconPadding * 2)
+        FloatingHUDConstants.default.compact.iconSize + (FloatingHUDConstants.default.compact.iconPadding * 2)
     }
 }
 

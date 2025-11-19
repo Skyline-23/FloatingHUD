@@ -8,51 +8,135 @@
 import SwiftUI
 
 public struct FloatingHUDConstants {
-    public var compactIconSize: CGFloat
-    public var compactIconPadding: CGFloat
-    public var compactSpacing: CGFloat
-    public var compactHorizontalPadding: CGFloat
-    public var compactVerticalPadding: CGFloat
-    public var expandedHeight: CGFloat
-    public var expandedWidthMax: CGFloat
-    public var horizontalMargin: CGFloat
-    public var verticalMargin: CGFloat
-    public var expansionAnimation: Animation
-    public var attachmentAnimation: Animation
-    public var dramaticCollapseSpring: Animation
-    public var cardStyle: FloatingHUDCardStyle
-    public var expandedLabelFont: Font?
+    public struct CompactConfig {
+        /// Icon square size in the compact card.
+        public var iconSize: CGFloat
+        /// Extra padding around the icon in the compact card.
+        public var iconPadding: CGFloat
+        /// Spacing between icon and label in compact mode.
+        public var spacing: CGFloat
+        /// Optional font override for the compact label (if nil, use caller-provided font).
+        public var labelFont: Font?
+        /// Horizontal padding of the compact card content.
+        public var horizontalPadding: CGFloat
+        /// Vertical padding of the compact card content.
+        public var verticalPadding: CGFloat
+        /// Corner radius when compact.
+        public var cornerRadius: CGFloat
+        
+        public static var `default`: CompactConfig {
+            CompactConfig(
+                iconSize: 20,
+                iconPadding: 1,
+                spacing: 4,
+                labelFont: nil,
+                horizontalPadding: 8,
+                verticalPadding: 10,
+                cornerRadius: 18
+            )
+        }
+    }
     
+    public struct ExpandedConfig {
+        /// Spacing between icon and label in the expanded header.
+        public var headerSpacing: CGFloat
+        /// Padding applied to the expanded card content.
+        public var horizontalPadding: CGFloat
+        public var verticalPadding: CGFloat
+        /// Vertical spacing within the expanded body.
+        public var bodySpacing: CGFloat
+        /// Vertical spacing above/below the divider inside the expanded body.
+        public var dividerSpacing: CGFloat
+        /// Whether to render the divider in the expanded header/body.
+        public var showsDivider: Bool
+        /// Optional divider color when expanded (nil = default overlay blend).
+        public var dividerColor: Color?
+        /// Optional font to apply to the header label while expanded.
+        public var labelFont: Font?
+        /// Corner radius when expanded.
+        public var cornerRadius: CGFloat
+        /// Maximum width the expanded card may grow to.
+        public var widthMax: CGFloat
+        
+        public static var `default`: ExpandedConfig {
+            ExpandedConfig(
+                headerSpacing: 14,
+                horizontalPadding: 20,
+                verticalPadding: 18,
+                bodySpacing: 18,
+                dividerSpacing: 0,
+                showsDivider: true,
+                dividerColor: nil,
+                labelFont: nil,
+                cornerRadius: 28,
+                widthMax: 360
+            )
+        }
+    }
+    
+    public struct Layout {
+        /// Horizontal margin used when snapping to edges.
+        public var horizontalMargin: CGFloat
+        /// Vertical margin used when snapping to edges.
+        public var verticalMargin: CGFloat
+        
+        public static var `default`: Layout {
+            Layout(horizontalMargin: 8, verticalMargin: 10)
+        }
+    }
+    
+    public struct Animations {
+        /// Spring used when expanding/collapsing the card.
+        public var expansion: Animation
+        /// Spring used when snapping after a drag or size change.
+        public var attachment: Animation
+        /// Spring used for dramatic collapse on tap.
+        public var dramaticCollapse: Animation
+        
+        public static var `default`: Animations {
+            Animations(
+                expansion: .interactiveSpring(response: 0.27, dampingFraction: 0.7, blendDuration: 0.02),
+                attachment: .interactiveSpring(response: 0.3, dampingFraction: 0.74, blendDuration: 0.04),
+                dramaticCollapse: .spring(response: 0.48, dampingFraction: 0.6, blendDuration: 0.05)
+            )
+        }
+    }
+    
+    /// Compact-mode configuration.
+    public var compact: CompactConfig
+    /// Expanded-mode configuration.
+    public var expanded: ExpandedConfig
+    /// Layout margins for snapping.
+    public var layout: Layout
+    /// Animations used throughout the HUD.
+    public var animations: Animations
+    /// Card background and shadow styling for compact/expanded.
+    public var cardStyle: FloatingHUDCardStyle
+    /// Minimum scale factor for labels before truncation.
+    public var labelMinimumScaleFactor: CGFloat
+    
+    /// Initialize all layout/animation knobs for the HUD.
+    /// - Parameters:
+    ///   - compact: Compact-mode configuration.
+    ///   - expanded: Expanded-mode configuration.
+    ///   - layout: Margins for snapping/clamping in the container.
+    ///   - animations: Springs used for expand/collapse/attach.
+    ///   - cardStyle: Background/stroke/shadow configuration.
+    ///   - labelMinimumScaleFactor: Minimum scale factor before labels truncate.
     public init(
-        compactIconSize: CGFloat = 20,
-        compactIconPadding: CGFloat = 1,
-        compactSpacing: CGFloat = 4,
-        compactHorizontalPadding: CGFloat = 8,
-        compactVerticalPadding: CGFloat = 10,
-        expandedHeight: CGFloat = 260,
-        expandedWidthMax: CGFloat = 360,
-        horizontalMargin: CGFloat = 8,
-        verticalMargin: CGFloat = 10,
-        expansionAnimation: Animation = .interactiveSpring(response: 0.27, dampingFraction: 0.7, blendDuration: 0.02),
-        attachmentAnimation: Animation = .interactiveSpring(response: 0.3, dampingFraction: 0.74, blendDuration: 0.04),
-        dramaticCollapseSpring: Animation = .spring(response: 0.48, dampingFraction: 0.6, blendDuration: 0.05),
+        compact: CompactConfig = .default,
+        expanded: ExpandedConfig = .default,
+        layout: Layout = .default,
+        animations: Animations = .default,
         cardStyle: FloatingHUDCardStyle = .material,
-        expandedLabelFont: Font? = nil
+        labelMinimumScaleFactor: CGFloat = 0.1
     ) {
-        self.compactIconSize = compactIconSize
-        self.compactIconPadding = compactIconPadding
-        self.compactSpacing = compactSpacing
-        self.compactHorizontalPadding = compactHorizontalPadding
-        self.compactVerticalPadding = compactVerticalPadding
-        self.expandedHeight = expandedHeight
-        self.expandedWidthMax = expandedWidthMax
-        self.horizontalMargin = horizontalMargin
-        self.verticalMargin = verticalMargin
-        self.expansionAnimation = expansionAnimation
-        self.attachmentAnimation = attachmentAnimation
-        self.dramaticCollapseSpring = dramaticCollapseSpring
+        self.compact = compact
+        self.expanded = expanded
+        self.layout = layout
+        self.animations = animations
         self.cardStyle = cardStyle
-        self.expandedLabelFont = expandedLabelFont
+        self.labelMinimumScaleFactor = labelMinimumScaleFactor
     }
     
     // Return a fresh instance to avoid sharing mutable state across concurrency domains.

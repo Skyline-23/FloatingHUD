@@ -14,7 +14,7 @@ struct SizeReader: View {
         GeometryReader { proxy in
             Color.clear
                 .onAppear { size = proxy.size }
-                .onChange(of: proxy.size) { size = $0 }
+                .onChange(of: proxy.size) { _, newSize in size = newSize }
         }
     }
 }

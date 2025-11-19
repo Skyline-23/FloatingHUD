@@ -16,22 +16,21 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View>:
     let expandedContent: () -> ExpandedContent
     let icon: () -> Icon
     let constants: FloatingHUDConstants
-    private let labelMinimumScaleFactor: CGFloat = 0.1
     
     var body: some View {
-        let cornerRadius: CGFloat = isExpanded ? 28 : 18
+        let cornerRadius: CGFloat = isExpanded ? constants.expanded.cornerRadius : constants.compact.cornerRadius
         let shape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
         let stackAlignment: Alignment = isExpanded ? .topLeading : .topTrailing
         let visuals = constants.cardStyle.visuals(for: isExpanded)
         
         ZStack(alignment: stackAlignment) {
             if isExpanded {
-                expandedBody
+                expandedBody()
             } else {
                 compactBody(isProxy: false)
             }
         }
-        .animation(constants.dramaticCollapseSpring, value: isExpanded)
+        .animation(constants.animations.dramaticCollapse, value: isExpanded)
         .frame(
             width: isExpanded ? targetSize.width : nil,
             height: isExpanded ? targetSize.height : nil,
@@ -46,39 +45,44 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View>:
             }
         }
         .foregroundStyle(.primary)
-        .onChange(of: compactState.observedContent) { newSize in
+        .onChange(of: compactState.observedContent) { _, newSize in
             updateContentSize(newSize)
         }
-        .onChange(of: compactState.observedLabel) { newSize in
+        .onChange(of: compactState.observedLabel) { _, newSize in
             updateLabelSize(newSize)
         }
     }
     
     private func compactBody(isProxy: Bool, measureLabel: Bool = true) -> some View {
-        HStack(alignment: .center, spacing: constants.compactSpacing) {
+        HStack(alignment: .center, spacing: constants.compact.spacing) {
             iconView(isProxy: isProxy)
             compactContentView(isProxy: isProxy, measureLabel: measureLabel)
         }
-        .padding(.horizontal, constants.compactHorizontalPadding)
-        .padding(.vertical, constants.compactVerticalPadding)
+        .padding(.horizontal, constants.compact.horizontalPadding)
+        .padding(.vertical, constants.compact.verticalPadding)
         .fixedSize()
         .background(SizeReader(size: contentSizeBinding))
     }
     
-    private var expandedBody: some View {
-        VStack(alignment: .leading, spacing: 18) {
-            HStack(alignment: .top, spacing: 14) {
-                iconView()
-                headerLabelView()
+    private func expandedBody(isProxy: Bool = false) -> some View {
+        VStack(alignment: .leading, spacing: constants.expanded.bodySpacing) {
+            HStack(alignment: .top, spacing: constants.expanded.headerSpacing) {
+                iconView(isProxy: isProxy)
+                headerLabelView(isProxy: isProxy)
                 Spacer(minLength: 0)
             }
             
-            Divider().blendMode(.overlay)
+            if constants.expanded.showsDivider {
+                Divider()
+                    .foregroundStyle(constants.expanded.dividerColor ?? .primary.opacity(0.2))
+                    .blendMode(constants.expanded.dividerColor == nil ? .overlay : .normal)
+                    .padding(.vertical, constants.expanded.dividerSpacing)
+            }
             
             expandedContent()
         }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 18)
+        .padding(.horizontal, constants.expanded.horizontalPadding)
+        .padding(.vertical, constants.expanded.verticalPadding)
         .overlay(alignment: .topTrailing) {
             // Keep the compact body in the tree (but hidden) so size observations stay fresh while expanded.
             compactBody(isProxy: true)
@@ -107,19 +111,23 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View>:
     }
     
     private func compactContentView(isProxy: Bool = false, measureLabel: Bool = true) -> AnyView {
-        let content = compactContent().minimumScaleFactor(labelMinimumScaleFactor)
-        let view = content
+        var view: AnyView = AnyView(compactContent())
+        if let font = constants.compact.labelFont {
+            view = AnyView(view.font(font))
+        }
+        view = AnyView(view.minimumScaleFactor(constants.labelMinimumScaleFactor))
+        let matched = view
             .conditionalMatchedGeometryEffect(id: "floatinghud-label", in: namespace, isProxy: isProxy)
         if measureLabel {
-            return AnyView(view.background(SizeReader(size: labelSizeBinding)))
+            return AnyView(matched.background(SizeReader(size: labelSizeBinding)))
         } else {
-            return AnyView(view)
+            return AnyView(matched)
         }
     }
     
-    private func headerLabelView() -> AnyView {
-        var view = compactContentView(isProxy: false, measureLabel: false)
-        if isExpanded, let font = constants.expandedLabelFont {
+    private func headerLabelView(isProxy: Bool = false) -> AnyView {
+        var view = compactContentView(isProxy: isProxy, measureLabel: false)
+        if isExpanded, let font = constants.expanded.labelFont {
             view = AnyView(view.font(font))
         }
         return view
