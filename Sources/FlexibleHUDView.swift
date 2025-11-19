@@ -81,7 +81,7 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View>:
     
     private func expandedBody(isProxy: Bool = false, forceExpandedStyle: Bool = false) -> some View {
         VStack(alignment: .leading, spacing: constants.expanded.bodySpacing) {
-            HStack(alignment: .top, spacing: constants.expanded.headerSpacing) {
+            HStack(alignment: .center, spacing: constants.expanded.headerSpacing) {
                 iconView(isProxy: isProxy)
                 headerLabelView(isProxy: isProxy, forceExpandedStyle: forceExpandedStyle)
                 Spacer(minLength: 0)
@@ -167,15 +167,6 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View>:
             applyScale: !shouldUseExpanded,
             forceExpandedStyle: shouldUseExpanded
         )
-        if shouldUseExpanded {
-            view = AnyView(
-                view
-                    .lineLimit(nil)
-                    .allowsTightening(false)
-                    .minimumScaleFactor(1.0)
-                    .fixedSize(horizontal: false, vertical: true)
-            )
-        }
         return view
     }
     

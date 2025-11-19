@@ -18,6 +18,15 @@ import FloatingHUD
 struct ContentView: View {
     @State private var containerSize: CGSize = .zero
     @State private var value: Double = 123
+    
+    // Provide fonts via constants rather than inline `.font` inside content,
+    // so each state can swap fonts cleanly.
+    private var hudFonts: FloatingHUDConstants {
+        var constants = FloatingHUDConstants.default
+        constants.compact.labelFont = .system(size: 18, weight: .semibold, design: .rounded)
+        constants.expanded.labelFont = .system(size: 28, weight: .semibold, design: .rounded)
+        return constants
+    }
 
     var body: some View {
         GeometryReader { proxy in
@@ -31,7 +40,6 @@ struct ContentView: View {
                     compact: {
                         HStack(spacing: 8) {
                             Text(String(format: "%.0f MB", value))
-                                .font(.system(size: 18, weight: .semibold, design: .rounded))
                                 .monospacedDigit()
                         }
                         .padding(.horizontal, 8)
@@ -59,7 +67,8 @@ struct ContentView: View {
                                 RoundedRectangle(cornerRadius: 14, style: .continuous)
                                     .fill(Color.white.opacity(0.12))
                             )
-                    }
+                    },
+                    constants: hudFonts
                 )
             }
         }
