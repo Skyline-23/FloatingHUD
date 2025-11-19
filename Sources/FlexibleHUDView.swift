@@ -144,8 +144,14 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View>:
         if applyScale {
             view = AnyView(view.minimumScaleFactor(constants.labelMinimumScaleFactor))
         }
-        let matched = view
-            .conditionalMatchedGeometryEffect(id: "floatinghud-label", in: namespace, isProxy: isProxy)
+        let matched: AnyView
+        if shouldMatchLabelGeometry {
+            matched = AnyView(
+                view.conditionalMatchedGeometryEffect(id: "floatinghud-label", in: namespace, isProxy: isProxy)
+            )
+        } else {
+            matched = view
+        }
         if measureLabel {
             return AnyView(matched.background(SizeReader(size: labelSizeBinding)))
         } else {
@@ -179,6 +185,11 @@ struct FlexibleHUDView<CompactContent: View, ExpandedContent: View, Icon: View>:
             .background(SizeReader(size: expandedSizeBinding))
             .opacity(0.001)
             .allowsHitTesting(false)
+    }
+    
+    private var shouldMatchLabelGeometry: Bool {
+        // If fonts differ between states, skip matchedGeometryEffect to avoid unintended scaling.
+        constants.compact.labelFont == nil && constants.expanded.labelFont == nil
     }
     
     private func updateLabelSize(_ newSize: CGSize) {
